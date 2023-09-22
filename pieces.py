@@ -20,13 +20,29 @@ class Pawn:
         self.colour = colour
         self.hasMoved = False
 
-    def movable_spots(self):
-        if self.colour:
-            x_change = 1
-        else:
-            x_chance = -1
+    def canMove(self, x, y, board):
+        if 0 <= y <= 7 and 0 <= x <= 7:
+            if self.colour:
+                multiplier = 1
+            else:
+                multiplier = -1
+            if y == self.y + multiplier * 1:
+                if x == self.x and board[x][y] == 0:
+                    return True
+                elif (x == self.x - 1 and x >= 0 and board[x][y] != 0) or \
+                        (x == self.x + 1 and x <= 7 and board[x][y] != 0):
+                    return board[x][y].colour is not self.colour
+                else:
+                    return False
+            elif y == self.y + multiplier * 2 and not self.hasMoved and board[x][y+multiplier * 1] == 0 and \
+                    board[x][y+multiplier * 2] == 0:
+                return True
+        return False
 
-
+    def move(self, x, y):
+        self.x = x
+        self.y = y
+        self.hasMoved = True
 
 class Bishop:
     def __init__(self, x, y, colour):
