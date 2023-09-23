@@ -14,11 +14,19 @@ class Side:
                            self.pawn7, self.pawn8]
 
 
-class Pawn:
+class Piece:
     def __init__(self, x, y, colour):
         self.x, self.y = x, y
-
         self.colour = colour
+
+    def move(self, x, y):
+        self.x, self.y = x, y
+
+
+class Pawn(Piece):
+    def __init__(self, x, y, colour):
+        super().__init__(x, y, colour)
+
         self.hasMoved = False
         # hasMoved is used for pawn double movement.
 
@@ -28,16 +36,17 @@ class Pawn:
         else:
             multiplier = -1
 
-        if y == self.y + multiplier * 1:    # Checks if the piece is moving one square forwards.
-            if x == self.x and board[x][y] == 0:    # Checks if the square in front is to be moved to, and is empty.
+        if y == self.y + multiplier * 1:  # Checks if the piece is moving one square forwards.
+            if x == self.x and board[x][y] == 0:  # Checks if the square in front is to be moved to, and is empty.
                 return True
             elif (x == self.x - 1 and x >= 0 and board[x][y] != 0) or \
-                    (x == self.x + 1 and x <= 7 and board[x][y] != 0):  # Checks if the square being moved to is diagonal
-                return board[x][y].colour is not self.colour    # Returns True if the piece can be taken.
+                    (x == self.x + 1 and x <= 7 and board[x][
+                        y] != 0):  # Checks if the square being moved to is diagonal
+                return board[x][y].colour is not self.colour  # Returns True if the piece can be taken.
             else:
                 return False
         elif y == self.y + multiplier * 2 and not self.hasMoved and board[x][y - multiplier * 1] == 0 and \
-                board[x][y] == 0:   # Checks for double jump.
+                board[x][y] == 0:  # Checks for double jump.
             return True
 
         return False
@@ -47,15 +56,10 @@ class Pawn:
         self.hasMoved = True
 
 
-class Bishop:
-    def __init__(self, x, y, colour):
-        self.x, self.y = x, y
-
-        self.colour = colour
-
+class Bishop(Piece):
     def canMove(self, x, y, board):
         if abs(x - self.x) == abs(y - self.y) and x - self.x != 0 and y - self.y != 0:  # Checks whether it is diagonal
-            distance = x - self.x   # Absolute distance is constant between x and y.
+            distance = x - self.x  # Absolute distance is constant between x and y.
             if distance < 0:
                 x_multiplier = -1
             else:
@@ -66,7 +70,8 @@ class Bishop:
                 y_multiplier = 1
 
             for i in range(1, abs(distance)):
-                if board[self.x + x_multiplier * i][self.y + y_multiplier * i] != 0:    # Returns false if the move jumps pieces.
+                if board[self.x + x_multiplier * i][self.y + y_multiplier * i] != 0:
+                    # Returns false if the move jumps pieces.
                     return False
             if board[x][y] == 0:
                 return True
@@ -75,15 +80,8 @@ class Bishop:
 
         return False
 
-    def move(self, x, y):
-        self.x, self.y = x, y
 
-
-class Queen:
-    def __init__(self, x, y, colour):
-        self.x = x
-        self.y = y
-        self.colour = colour
+class Queen(Piece):
 
     def canMove(self, x, y, board):
         x_change = x - self.x
@@ -104,7 +102,8 @@ class Queen:
             if abs(x_change) == abs(y_change) and x - self.x != 0 and y - self.y != 0:  # Checks whether it is diagonal
 
                 for i in range(1, abs(x_change)):
-                    if board[self.x + x_multiplier * i][self.y + y_multiplier * i] != 0:    # Returns false if the move jumps pieces.
+                    if board[self.x + x_multiplier * i][
+                        self.y + y_multiplier * i] != 0:  # Returns false if the move jumps pieces.
                         return False
                 diagonal = True
             ###########################################
@@ -134,26 +133,22 @@ class Queen:
 
         return False
 
-    def move(self, x, y):
-        self.x, self.y = x, y
 
-
-class King:
-    def __init__(self, x, y, colour):
-        self.x = x
-        self.y = y
-        self.colour = colour
-
-
+class King(Piece):
     def canMove(self, x, y, board):
+        if (abs(x - self.x), abs(y - self.y)) in [(1, 1), (1, 0), (0, 1)]:
+            if board[x][y] == 0:
+                return self.inCheck(x, y)
+            elif board[x][y].colour is not self.colour:
+                return self.inCheck(x, y)
+        return False
+
+    def inCheck(self, x, y):
         pass
+        # Need to make a theoretical board copy when you move it there and check diagonals, straights and knight positions.
 
-class Rook:
-    def __init__(self, x, y, colour):
-        self.x = x
-        self.y = y
-        self.colour = colour
 
+class Rook(Piece):
     def canMove(self, x, y, board):
         x_change = x - self.x
         y_change = y - self.y
@@ -171,13 +166,13 @@ class Rook:
                 return False
 
             if x_change == 0:
-                for i in range(1, y_change-1):
-                    if board[x][self.y + y_multiplier * i] != 0:    # Returns false if the move jumps pieces.
+                for i in range(1, y_change - 1):
+                    if board[x][self.y + y_multiplier * i] != 0:  # Returns false if the move jumps pieces.
                         return False
 
             if y_change == 0:
                 for i in range(1, x_change - 1):
-                    if board[self.x + x_multiplier * i][y] != 0:    # Returns false if the move jumps pieces.
+                    if board[self.x + x_multiplier * i][y] != 0:  # Returns false if the move jumps pieces.
                         return False
 
             if board[x][y] == 0:
@@ -187,23 +182,13 @@ class Rook:
 
         return False
 
-    def move(self, x, y):
-        self.x, self.y = x, y
 
-
-class Knight:
-    def __init__(self, x, y, colour):
-        self.x = x
-        self.y = y
-        self.colour = colour
-
+class Knight(Piece):
     def canMove(self, x, y, board):
-        abs_vector = (abs(x-self.x), abs(y-self.y))
+        abs_vector = (abs(x - self.x), abs(y - self.y))
         if abs_vector in [(1, 2), (2, 1)]:
             if board[x][y] == 0:
                 return True
             elif board[x][y].colour is not self.colour:
                 return True
         return False
-    def move(self, x, y):
-        self.x, self.y = x, y
