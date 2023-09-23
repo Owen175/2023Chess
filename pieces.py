@@ -138,13 +138,129 @@ class King(Piece):
     def canMove(self, x, y, board):
         if (abs(x - self.x), abs(y - self.y)) in [(1, 1), (1, 0), (0, 1)]:
             if board[x][y] == 0:
-                return self.inCheck(x, y)
+                return not self.inCheck(self.x, self.y, x, y)
             elif board[x][y].colour is not self.colour:
-                return self.inCheck(x, y)
+                return not self.inCheck(self.x, self.y, x, y)
         return False
 
-    def inCheck(self, x, y):
-        pass
+    def inCheck(self, init_x, init_y, x, y, board):
+        # return True if in check
+        if self.colour:
+            multiplier = 1
+        else:
+            multiplier = -1
+        temp_board = board[:][:]
+        temp_board[x][y] = temp_board[init_x][init_y]
+        temp_board[init_x][init_y] = 0
+
+        # Pawn Check
+        if type(temp_board[x - 1][y + multiplier]) == Pawn:
+            if temp_board[x - 1][y + multiplier].colour is not self.colour:
+                return True
+        if type(temp_board[x + 1][y + multiplier]) == Pawn:
+            if temp_board[x + 1][y + multiplier].colour is not self.colour:
+                return True
+
+        # Knight Check
+        knightPosList = [(x + 2, y + 1), (x + 2, y - 1), (x + 1, y + 2), (x + 1, y - 2), (x - 1, y + 2), (x - 1, y - 2),
+                         (x - 2, y + 1), (x - 2, y - 1)]
+        for pos in knightPosList:
+            if 0 <= pos[0] <= 7 and 0 <= pos[1] <= 7:
+                if type(temp_board[pos[0]][pos[1]]) == Knight:
+                    if temp_board[pos[0]][pos[1]].colour is not self.colour:
+                        return True
+
+        # King Check
+        kingPosList = [(x + 1, y + 1), (x + 1, y), (x + 1, y - 1), (x, y + 1), (x, y - 1), (x - 1, y + 1), (x - 1, y),
+                       (x - 1, y - 1)]
+        for pos in kingPosList:
+            if 0 <= pos[0] <= 7 and 0 <= pos[1] <= 7:
+                if type(temp_board[pos[0]][pos[1]]) == King:
+                    return True
+
+        # Rook Check + straight Queen check
+        temp_x = x
+        noPiece = True
+        while temp_x >= 0 and noPiece:  # Checks the left of the king
+            if temp_board[temp_x][y] != 0:
+                noPiece = False
+                if type(temp_board[temp_x][y]) == Rook or type(temp_board[temp_x][y]) == Queen:
+                    return True
+            temp_x -= 1
+
+        temp_x = x
+        noPiece = True
+        while temp_x <= 7 and noPiece:  # Checks the right of the king
+            if temp_board[temp_x][y] != 0:
+                noPiece = False
+                if type(temp_board[temp_x][y]) == Rook or type(temp_board[temp_x][y]) == Queen:
+                    return True
+            temp_x += 1
+        return False
+
+        temp_y = y
+        noPiece = True
+        while temp_y >= 0 and noPiece:  # Checks above of the king
+            if temp_board[x][temp_y] != 0:
+                noPiece = False
+                if type(temp_board[x][temp_y]) == Rook or type(temp_board[x][temp_y]) == Queen:
+                    return True
+            temp_y -= 1
+
+        temp_y = y
+        noPiece = True
+        while temp_y <= 7 and noPiece:  # Checks below the king
+            if temp_board[x][temp_y] != 0:
+                noPiece = False
+                if type(temp_board[x][temp_y]) == Rook or type(temp_board[x][temp_y]) == Queen:
+                    return True
+            temp_y += 1
+
+        # Bishop Check + diagonal Queen check
+        temp_x = x
+        temp_y = y
+        noPiece = True
+        while temp_x >= 0 and temp_y >= 0 and noPiece:
+            if temp_board[temp_x][temp_y] != 0:
+                noPiece = False
+                if type(temp_board[temp_x][temp_y]) == Rook or type(temp_board[temp_x][temp_y]) == Queen:
+                    return True
+            temp_x -= 1
+            temp_y -= 1
+
+        temp_x = x
+        temp_y = y
+        noPiece = True
+        while temp_x >= 0 and temp_y <= 7 and noPiece:
+            if temp_board[temp_x][temp_y] != 0:
+                noPiece = False
+                if type(temp_board[temp_x][temp_y]) == Rook or type(temp_board[temp_x][temp_y]) == Queen:
+                    return True
+            temp_x -= 1
+            temp_y += 1
+
+        temp_x = x
+        temp_y = y
+        noPiece = True
+        while temp_x <= 7 and temp_y >= 0 and noPiece:
+            if temp_board[temp_x][temp_y] != 0:
+                noPiece = False
+                if type(temp_board[temp_x][temp_y]) == Rook or type(temp_board[temp_x][temp_y]) == Queen:
+                    return True
+            temp_x += 1
+            temp_y -= 1
+
+        temp_x = x
+        temp_y = y
+        noPiece = True
+        while temp_x <= 7 and temp_y <= 7 and noPiece:
+            if temp_board[temp_x][temp_y] != 0:
+                noPiece = False
+                if type(temp_board[temp_x][temp_y]) == Rook or type(temp_board[temp_x][temp_y]) == Queen:
+                    return True
+            temp_x += 1
+            temp_y += 1
+        return False
         # Need to make a theoretical board copy when you move it there and check diagonals, straights and knight positions.
 
 
