@@ -1,3 +1,6 @@
+import copy
+
+
 class Side:
     def __init__(self, king, queen, bishop1, bishop2, knight1, knight2, rook1, rook2, pawn1, pawn2, pawn3, pawn4, pawn5,
                  pawn6, pawn7, pawn8):
@@ -138,9 +141,9 @@ class King(Piece):
     def canMove(self, x, y, board):
         if (abs(x - self.x), abs(y - self.y)) in [(1, 1), (1, 0), (0, 1)]:
             if board[x][y] == 0:
-                return not self.inCheck(self.x, self.y, x, y)
+                return not self.inCheck(self.x, self.y, x, y, board)
             elif board[x][y].colour is not self.colour:
-                return not self.inCheck(self.x, self.y, x, y)
+                return not self.inCheck(self.x, self.y, x, y, board)
         return False
 
     def inCheck(self, init_x, init_y, x, y, board):
@@ -149,7 +152,9 @@ class King(Piece):
             multiplier = 1
         else:
             multiplier = -1
-        temp_board = board[:][:]
+
+        temp_board = copy.deepcopy(board)
+        # Does not work with list slicing - you need to deep copy or the board gets changed.
         temp_board[x][y] = temp_board[init_x][init_y]
         temp_board[init_x][init_y] = 0
 
