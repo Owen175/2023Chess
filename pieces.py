@@ -85,7 +85,6 @@ class Queen:
         self.y = y
         self.colour = colour
 
-
     def canMove(self, x, y, board):
         x_change = x - self.x
         y_change = y - self.y
@@ -197,3 +196,14 @@ class Knight:
         self.x = x
         self.y = y
         self.colour = colour
+
+    def canMove(self, x, y, board):
+        abs_vector = (abs(x-self.x), abs(y-self.y))
+        if abs_vector in [(1, 2), (2, 1)]
+            if board[x][y] == 0:
+                return True
+            elif board[x][y].colour is not self.colour:
+                return True
+        return False
+    def move(self, x, y):
+        self.x, self.y = x, y
