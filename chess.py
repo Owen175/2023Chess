@@ -12,10 +12,12 @@ class Board:
         self.wht_move = True
 
     def setup_board(self):
+        # Adds the objects to the board
         for piece in (self.blk.piece_list + self.wht.piece_list):
             x, y = piece.x, piece.y
             if self.board[x][y] != 0:
                 raise ValueError('Two positions for pieces are duplicates')
+            # Raises an error if two pieces are set in the same place.
             self.board[piece.x][piece.y] = piece
 
     def next_move(self):
@@ -39,27 +41,34 @@ class Board:
                 init_y = int(move[1]) - 1
                 final_x = y_conversion.index(move[2].upper())
                 final_y = int(move[3]) - 1
+                # Converts from algebraic chess notation to cartesian coordinates, indexed at 0 for the board.
 
                 correct_data = init_x in range_check and init_y in range_check and final_x in range_check and \
-                               final_y in range_check
+                    final_y in range_check
+                # Checks that the coordinate values are in the board
                 if correct_data is not True:
                     print('Please input data in the range of A-F and 1-8')
+
             if self.board[init_x][init_y] != 0:
                 valid_move = self.board[init_x][init_y].canMove(final_x, final_y, self.board) and \
                              self.board[init_x][init_y].colour == self.wht_move
+                # Checks whether the piece can move to the desired place. True if it can, false if cannot
 
                 if valid_move is not True:
-                    print('Invalid input. Try again.')
+                    print('Invalid move. Try again.')
+
         self.move_piece((init_x, init_y), (final_x, final_y))
+        # Updates board and piece x and y
 
         self.wht_move = not self.wht_move
+        # Changes turn
+
         self.next_move()
 
     def move_piece(self, init_pos, final_pos):
         self.board[final_pos[0]][final_pos[1]] = self.board[init_pos[0]][init_pos[1]]
         self.board[init_pos[0]][init_pos[1]] = 0
         self.board[final_pos[0]][final_pos[1]].move(final_pos[0], final_pos[1])
-        print(self.board)
 
 
 black = Side(King(4, 7, False), Queen(3, 7, False), Bishop(2, 7, False), Bishop(5, 7, False), Knight(1, 7, False),
@@ -70,6 +79,8 @@ black = Side(King(4, 7, False), Queen(3, 7, False), Bishop(2, 7, False), Bishop(
 white = Side(King(4, 0, True), Queen(3, 0, True), Bishop(2, 0, True), Bishop(5, 0, True), Knight(1, 0, True),
              Knight(6, 0, True), Rook(0, 0, True), Rook(7, 0, True), Pawn(0, 1, True), Pawn(1, 1, True),
              Pawn(2, 1, True), Pawn(3, 1, True), Pawn(4, 1, True), Pawn(5, 1, True), Pawn(6, 1, True), Pawn(7, 1, True))
+
+# Initialises 2 instances of the class side, with the pieces in position
 
 chessboard = Board(black, white)
 chessboard.setup_board()
