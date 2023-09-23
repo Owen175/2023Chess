@@ -99,21 +99,40 @@ class Queen:
             y_multiplier = 1
 
         if not (x_change == 0 and y_change == 0):
+            ##############################################
+            # Checks for straight movement
             if x_change == 0:
                 for i in range(1, y_change-1):
-                    if board[x][self.y + y_multiplier * i] != 0:
+                    if board[x][self.y + y_multiplier * i] != 0:    # Returns false if the move jumps pieces.
                         return False
 
             if y_change == 0:
                 for i in range(1, x_change - 1):
-                    if board[self.x + x_multiplier * i][y] != 0:
+                    if board[self.x + x_multiplier * i][y] != 0:    # Returns false if the move jumps pieces.
                         return False
+
+            ###########################################
+
+            ###########################################
+            # Checks for diagonal movement.
+            if abs(x_change) == abs(y_change) and x - self.x != 0 and y - self.y != 0:  # Checks whether it is diagonal
+
+                for i in range(1, abs(x_change)):
+                    if board[self.x + x_multiplier * i][self.y + y_multiplier * i] != 0:    # Returns false if the move jumps pieces.
+                        return False
+
+            ###########################################
 
             if board[x][y] == 0:
                 return True
             elif board[x][y].colour is not self.colour:
                 return True
+
         return False
+
+    def move(self, x, y):
+        self.x, self.y = x, y
+
 
 class King:
     def __init__(self, x, y, colour):
@@ -123,7 +142,7 @@ class King:
 
 
     def canMove(self, x, y, board):
-
+        pass
 
 class Rook:
     def __init__(self, x, y, colour):
