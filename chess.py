@@ -42,11 +42,14 @@ class Board:
 
                 correct_data = init_x in range_check and init_y in range_check and final_x in range_check and \
                                final_y in range_check
-
+                if correct_data is not True:
+                    print('Please input data in the range of A-F and 1-8')
             if self.board[init_x][init_y] != 0:
                 valid_move = self.board[init_x][init_y].canMove(final_x, final_y, self.board) and \
                              self.board[init_x][init_y].colour == self.wht_move
 
+                if valid_move is not True:
+                    print('Invalid input. Try again.')
         self.move_piece((init_x, init_y), (final_x, final_y))
 
         self.wht_move = not self.wht_move
@@ -56,6 +59,7 @@ class Board:
         self.board[final_pos[0]][final_pos[1]] = self.board[init_pos[0]][init_pos[1]]
         self.board[init_pos[0]][init_pos[1]] = 0
         self.board[final_pos[0]][final_pos[1]].move(final_pos[0], final_pos[1])
+        print(self.board)
 
 
 black = Side(King(4, 7, False), Queen(3, 7, False), Bishop(2, 7, False), Bishop(5, 7, False), Knight(1, 7, False),

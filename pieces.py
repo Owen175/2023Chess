@@ -21,11 +21,14 @@ class Pawn:
         self.hasMoved = False
 
     def canMove(self, x, y, board):
+        print(x,y, self.x, self.y)
         if 0 <= y <= 7 and 0 <= x <= 7:
             if self.colour:
                 multiplier = 1
             else:
                 multiplier = -1
+            print(board)
+            print(board[x][y+multiplier * 1], y-multiplier * 1)
             if y == self.y + multiplier * 1:
                 if x == self.x and board[x][y] == 0:
                     return True
@@ -34,8 +37,8 @@ class Pawn:
                     return board[x][y].colour is not self.colour
                 else:
                     return False
-            elif y == self.y + multiplier * 2 and not self.hasMoved and board[x][y+multiplier * 1] == 0 and \
-                    board[x][y+multiplier * 2] == 0:
+            elif y == self.y + multiplier * 2 and not self.hasMoved and board[x][y-multiplier * 1] == 0 and \
+                    board[x][y] == 0:
                 return True
         return False
 
