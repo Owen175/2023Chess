@@ -50,9 +50,12 @@ class Board:
                     print('Please input data in the range of A-F and 1-8')
 
             if self.board[init_x][init_y] != 0:
-                valid_move = self.board[init_x][init_y].canMove(final_x, final_y, self.board) and \
-                             self.board[init_x][init_y].colour == self.wht_move
-                # Checks whether the piece can move to the desired place. True if it can, false if cannot
+                if self.board[init_x][init_y].colour == self.wht_move:
+
+                    valid_move = self.board[init_x][init_y].canMove(final_x, final_y, self.board)
+                    # Checks whether the piece can move to the desired place. True if it can, false if cannot
+                else:
+                    print('Not your piece')
 
                 if valid_move is not True:
                     print('Invalid move. Try again.')
