@@ -199,7 +199,7 @@ class Knight:
 
     def canMove(self, x, y, board):
         abs_vector = (abs(x-self.x), abs(y-self.y))
-        if abs_vector in [(1, 2), (2, 1)]
+        if abs_vector in [(1, 2), (2, 1)]:
             if board[x][y] == 0:
                 return True
             elif board[x][y].colour is not self.colour:
