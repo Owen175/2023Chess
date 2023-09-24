@@ -36,16 +36,16 @@ class Board:
                 if valid_move is not True:
                     print('Invalid move. Try again.')
                     return []
+        if type(self.board[init_x][init_y]) != King:
+            if self.wht_move:
+                if self.wht.king.inCheck(self.wht.king.x, self.wht.king.y, self.wht.king.x, self.wht.king.y, self.board):
+                    print('Moves the white king into check. Invalid move.')
+                    return []
 
-        if self.wht_move:
-            if self.wht.king.inCheck(self.wht.king.x, self.wht.king.y, self.wht.king.x, self.wht.king.y, self.board):
-                print('Moves the white king into check. Invalid move.')
-                return []
-
-        else:
-            if self.blk.king.inCheck(self.blk.king.x, self.blk.king.y, self.blk.king.x, self.blk.king.y, self.board):
-                print('Moves the black king into check. Invalid move.')
-                return []
+            else:
+                if self.blk.king.inCheck(self.blk.king.x, self.blk.king.y, self.blk.king.x, self.blk.king.y, self.board):
+                    print('Moves the black king into check. Invalid move.')
+                    return []
         self.move_piece((init_x, init_y), (final_x, final_y))
         # Updates board and piece x and y
 
