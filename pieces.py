@@ -1,5 +1,7 @@
 import copy
 
+import pygame
+
 
 class Side:
     def __init__(self, king, queen, bishop1, bishop2, knight1, knight2, rook1, rook2, pawn1, pawn2, pawn3, pawn4, pawn5,
@@ -161,9 +163,11 @@ class King(Piece):
         # Pawn Check
         if type(temp_board[x - 1][y + multiplier]) == Pawn:
             if temp_board[x - 1][y + multiplier].colour is not self.colour:
+                print('p')
                 return True
         if type(temp_board[x + 1][y + multiplier]) == Pawn:
             if temp_board[x + 1][y + multiplier].colour is not self.colour:
+                print('p')
                 return True
 
         # Knight Check
@@ -173,6 +177,7 @@ class King(Piece):
             if 0 <= pos[0] <= 7 and 0 <= pos[1] <= 7:
                 if type(temp_board[pos[0]][pos[1]]) == Knight:
                     if temp_board[pos[0]][pos[1]].colour is not self.colour:
+                        print('k')
                         return True
 
         # King Check
@@ -181,7 +186,9 @@ class King(Piece):
         for pos in kingPosList:
             if 0 <= pos[0] <= 7 and 0 <= pos[1] <= 7:
                 if type(temp_board[pos[0]][pos[1]]) == King:
-                    return True
+                    if temp_board[pos[0]][pos[1]].colour is not self.colour:
+                        print('kng')
+                        return True
 
         # Rook Check + straight Queen check
         temp_x = x
@@ -190,7 +197,10 @@ class King(Piece):
             if temp_board[temp_x][y] != 0:
                 noPiece = False
                 if type(temp_board[temp_x][y]) == Rook or type(temp_board[temp_x][y]) == Queen:
-                    return True
+                    if temp_board[temp_x][y].colour is not self.colour:
+                        print('r/q')
+                        return True
+
             temp_x -= 1
 
         temp_x = x
@@ -199,7 +209,9 @@ class King(Piece):
             if temp_board[temp_x][y] != 0:
                 noPiece = False
                 if type(temp_board[temp_x][y]) == Rook or type(temp_board[temp_x][y]) == Queen:
-                    return True
+                    if temp_board[temp_x][y].colour is not self.colour:
+                        print('r/q')
+                        return True
             temp_x += 1
         return False
 
@@ -209,7 +221,9 @@ class King(Piece):
             if temp_board[x][temp_y] != 0:
                 noPiece = False
                 if type(temp_board[x][temp_y]) == Rook or type(temp_board[x][temp_y]) == Queen:
-                    return True
+                    if temp_board[x][temp_y].colour is not self.colour:
+                        print('r/q')
+                        return True
             temp_y -= 1
 
         temp_y = y
@@ -218,7 +232,9 @@ class King(Piece):
             if temp_board[x][temp_y] != 0:
                 noPiece = False
                 if type(temp_board[x][temp_y]) == Rook or type(temp_board[x][temp_y]) == Queen:
-                    return True
+                    if temp_board[x][temp_y].colour is not self.colour:
+                        print('r/q')
+                        return True
             temp_y += 1
 
         # Bishop Check + diagonal Queen check
@@ -228,8 +244,10 @@ class King(Piece):
         while temp_x >= 0 and temp_y >= 0 and noPiece:
             if temp_board[temp_x][temp_y] != 0:
                 noPiece = False
-                if type(temp_board[temp_x][temp_y]) == Rook or type(temp_board[temp_x][temp_y]) == Queen:
-                    return True
+                if type(temp_board[temp_x][temp_y]) == Bishop or type(temp_board[temp_x][temp_y]) == Queen:
+                    if temp_board[temp_x][temp_y].colour is not self.colour:
+                        print('r/q')
+                        return True
             temp_x -= 1
             temp_y -= 1
 
@@ -239,8 +257,9 @@ class King(Piece):
         while temp_x >= 0 and temp_y <= 7 and noPiece:
             if temp_board[temp_x][temp_y] != 0:
                 noPiece = False
-                if type(temp_board[temp_x][temp_y]) == Rook or type(temp_board[temp_x][temp_y]) == Queen:
-                    return True
+                if type(temp_board[temp_x][temp_y]) == Bishop or type(temp_board[temp_x][temp_y]) == Queen:
+                    if temp_board[temp_x][temp_y].colour is not self.colour:
+                        return True
             temp_x -= 1
             temp_y += 1
 
@@ -250,8 +269,9 @@ class King(Piece):
         while temp_x <= 7 and temp_y >= 0 and noPiece:
             if temp_board[temp_x][temp_y] != 0:
                 noPiece = False
-                if type(temp_board[temp_x][temp_y]) == Rook or type(temp_board[temp_x][temp_y]) == Queen:
-                    return True
+                if type(temp_board[temp_x][temp_y]) == Bishop or type(temp_board[temp_x][temp_y]) == Queen:
+                    if temp_board[temp_x][temp_y].colour is not self.colour:
+                        return True
             temp_x += 1
             temp_y -= 1
 
@@ -261,8 +281,9 @@ class King(Piece):
         while temp_x <= 7 and temp_y <= 7 and noPiece:
             if temp_board[temp_x][temp_y] != 0:
                 noPiece = False
-                if type(temp_board[temp_x][temp_y]) == Rook or type(temp_board[temp_x][temp_y]) == Queen:
-                    return True
+                if type(temp_board[temp_x][temp_y]) == Bishop or type(temp_board[temp_x][temp_y]) == Queen:
+                    if temp_board[temp_x][temp_y].colour is not self.colour:
+                        return True
             temp_x += 1
             temp_y += 1
         return False
@@ -313,3 +334,19 @@ class Knight(Piece):
             elif board[x][y].colour is not self.colour:
                 return True
         return False
+
+
+class Spritesheet:
+    def __init__(self):
+        self.sp_sheet = pygame.image.load('C:/Users/owenc/Documents/Github/chess/Chess/pieces.png').convert_alpha()
+        self.rows = 2
+        self.cols = 6
+        self.rect_count = self.cols * self.rows
+        self.rect = self.sp_sheet.get_rect()
+        self.cell_width = self.rect.width // self.cols
+        self.cell_height = self.rect.height // self.rows
+        self.cells = list([(i % self.cols * self.cell_width, i // self.cols * self.cell_height, self.cell_width,
+                            self.cell_height) for i in range(self.rect_count)])
+
+    def get_piece(self, i):
+        return self.cells[i]

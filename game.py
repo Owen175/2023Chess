@@ -10,6 +10,8 @@ class Board:
                       [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]]
         self.wht_move = True
+        self.piece_idx = [King, Queen, Bishop, Knight, Rook, Pawn]
+        self.piece_list = blk.piece_list + wht.piece_list
 
     def setup_board(self):
         # Adds the objects to the board
@@ -20,37 +22,9 @@ class Board:
             # Raises an error if two pieces are set in the same place.
             self.board[piece.x][piece.y] = piece
 
-    def next_move(self):
-        y_conversion = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-        range_check = [0, 1, 2, 3, 4, 5, 6, 7]
-
-        if self.wht_move:
-            team = 'white'
-        else:
-            team = 'black'
-
-        # Input is in algebraic chess notation, where A-H represent the x axis and 1-8 represents the y
+    def next_move(self, init_x, init_y, final_x, final_y):
         valid_move = False
         while valid_move is not True:
-            correct_data = False
-            while correct_data is not True:
-                move = ''
-                while len(move) != 4:
-                    print(f'What is {team}\'s move')
-                    move = input()
-
-                init_x = y_conversion.index(move[0].upper())
-                init_y = int(move[1]) - 1
-                final_x = y_conversion.index(move[2].upper())
-                final_y = int(move[3]) - 1
-                # Converts from algebraic chess notation to cartesian coordinates, indexed at 0 for the board.
-
-                correct_data = init_x in range_check and init_y in range_check and final_x in range_check and \
-                    final_y in range_check
-                # Checks that the coordinate values are in the board
-                if correct_data is not True:
-                    print('Please input data in the range of A-F and 1-8')
-
             if self.board[init_x][init_y] != 0:
                 if self.board[init_x][init_y].colour == self.wht_move:
 
@@ -61,13 +35,22 @@ class Board:
 
                 if valid_move is not True:
                     print('Invalid move. Try again.')
+                    return []
 
+        if self.wht_move:
+            if self.wht.king.inCheck(self.wht.king.x, self.wht.king.y, self.wht.king.x, self.wht.king.y, self.board):
+                print('Moves the white king into check. Invalid move.')
+                return []
+
+        else:
+            if self.blk.king.inCheck(self.blk.king.x, self.blk.king.y, self.blk.king.x, self.blk.king.y, self.board):
+                print('Moves the black king into check. Invalid move.')
+                return []
         self.move_piece((init_x, init_y), (final_x, final_y))
         # Updates board and piece x and y
 
         self.wht_move = not self.wht_move
         # Changes turn
-
         return (init_x, init_y), (final_x, final_y)
 
     def move_piece(self, init_pos, final_pos):
