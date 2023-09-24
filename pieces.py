@@ -35,7 +35,7 @@ class Pawn(Piece):
         self.hasMoved = False
         # hasMoved is used for pawn double movement.
 
-    def canMove(self, x, y, board):
+    def canMove(self, x, y, board, enPassantMoves=[], chessboard=None):
         if self.colour:
             multiplier = 1
         else:
@@ -44,15 +44,18 @@ class Pawn(Piece):
         if y == self.y + multiplier * 1:  # Checks if the piece is moving one square forwards.
             if x == self.x and board[x][y] == 0:  # Checks if the square in front is to be moved to, and is empty.
                 return True
-            elif (x == self.x - 1 and x >= 0 and board[x][y] != 0) or \
-                    (x == self.x + 1 and x <= 7 and board[x][
-                        y] != 0):  # Checks if the square being moved to is diagonal
+            elif (x == self.x - 1 and x >= 0 and (board[x][y] != 0 or (x, y) in enPassantMoves)) or \
+                    (x == self.x + 1 and x <= 7 and (board[x][y] != 0 or (x, y) in enPassantMoves)):
+                if (x, y) in enPassantMoves:
+                    chessboard.enPassantCapturedPiece.append((x, self.y))
+                    return True
+                # Checks if the square being moved to is diagonal, as well as for en passant.
                 return board[x][y].colour is not self.colour  # Returns True if the piece can be taken.
             else:
                 return False
         elif y == self.y + multiplier * 2 and not self.hasMoved and board[x][y - multiplier * 1] == 0 and \
                 board[x][y] == 0:  # Checks for double jump.
-            return True
+            return True, [(self.x, self.y + multiplier)]
 
         return False
 

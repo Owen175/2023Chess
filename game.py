@@ -12,7 +12,9 @@ class Board:
         self.wht_move = True
         self.piece_idx = [King, Queen, Bishop, Knight, Rook, Pawn]
         self.piece_list = blk.piece_list + wht.piece_list
-
+        self.wht_enPassantSquares = []
+        self.blk_enPassantSquares = []
+        self.enPassantCapturedPiece = []
     def setup_board(self):
         # Adds the objects to the board
         for piece in (self.blk.piece_list + self.wht.piece_list):
@@ -22,20 +24,45 @@ class Board:
             # Raises an error if two pieces are set in the same place.
             self.board[piece.x][piece.y] = piece
 
-    def next_move(self, init_x, init_y, final_x, final_y):
+    def next_move(self, init_x, init_y, final_x, final_y, chessboard):
+        chessboard.enPassantCapturedPiece = []
         valid_move = False
-        while valid_move is not True:
-            if self.board[init_x][init_y] != 0:
-                if self.board[init_x][init_y].colour == self.wht_move:
-
-                    valid_move = self.board[init_x][init_y].canMove(final_x, final_y, self.board)
-                    # Checks whether the piece can move to the desired place. True if it can, false if cannot
+        if self.board[init_x][init_y] != 0:
+            if self.board[init_x][init_y].colour == self.wht_move:
+                if type(self.board[init_x][init_y]) == Pawn:
+                    if self.wht_move:
+                        _ = self.board[init_x][init_y].canMove(final_x, final_y, self.board,
+                                                               enPassantMoves=self.blk_enPassantSquares, chessboard=chessboard)
+                    else:
+                        _ = self.board[init_x][init_y].canMove(final_x, final_y, self.board,
+                                                               enPassantMoves=self.wht_enPassantSquares, chessboard=chessboard)
+                    if type(_) == bool:
+                        valid_move = _
+                    else:
+                        if self.wht_move:
+                            valid_move, self.wht_enPassantSquares = _
+                        else:
+                            valid_move, self.blk_enPassantSquares = _
                 else:
-                    print('Not your piece')
+                    valid_move = self.board[init_x][init_y].canMove(final_x, final_y, self.board)
 
-                if valid_move is not True:
-                    print('Invalid move. Try again.')
-                    return []
+                # Checks whether the piece can move to the desired place. True if it can, false if cannot
+            else:
+                print('Not your piece')
+
+            if valid_move is not True:
+                print('Invalid move. Try again.')
+                return []
+            else:
+                if type(self.board[init_x][init_y]) == Pawn and ((self.wht_move and final_y == 7) or
+                                                                 (self.wht_move and final_y == 0)):
+                    print('Which piece do you want to replace the pawn? '
+                          '1 for Queen, 2 for Bishop, 3 for Knight and 4 for Rook')
+                    index = int(input())
+                    self.board[init_x][init_y] = self.piece_idx[index](final_x, final_y, self.wht_move)
+        else:
+            print('Click a piece')
+            return []
         if type(self.board[init_x][init_y]) != King:
             if self.wht_move:
                 if self.wht.king.inCheck(self.wht.king.x, self.wht.king.y, self.wht.king.x, self.wht.king.y, self.board):
@@ -46,9 +73,13 @@ class Board:
                 if self.blk.king.inCheck(self.blk.king.x, self.blk.king.y, self.blk.king.x, self.blk.king.y, self.board):
                     print('Moves the black king into check. Invalid move.')
                     return []
+
         self.move_piece((init_x, init_y), (final_x, final_y))
         # Updates board and piece x and y
-
+        if self.wht_move:
+            self.blk_enPassantSquares = []
+        else:
+            self.wht_enPassantSquares = []
         self.wht_move = not self.wht_move
         # Changes turn
         return (init_x, init_y), (final_x, final_y)

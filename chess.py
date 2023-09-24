@@ -5,7 +5,7 @@ from pieces import Spritesheet
 
 def process_click(x, y, clk_list):
     if len(click_list) == 2:
-        moved = chessboard.next_move(clk_list[0], clk_list[1], x, y)
+        moved = chessboard.next_move(clk_list[0], clk_list[1], x, y, chessboard)
         return [], moved
     else:
         return [x, y], []
@@ -81,18 +81,19 @@ while not gameEnd:
             if event.button == 1:
                 click_list, changes = process_click(event.pos[0] // square_side_len,
                                                     7 - event.pos[1] // square_side_len, click_list)
-                # Check for check. If check, dont allow any changes.
                 if len(changes) == 2:
                     idx = get_sheet_index(chessboard, changes[1])
                     sp_sheet_area = spritesheet.get_piece(idx)
                     x, y = changes[1][0], changes[1][1]
-                    print(changes)
                     clear_square(changes[0])
                     clear_square(changes[1])
+                    for pos in chessboard.enPassantCapturedPiece:
+                        captured_x, captured_y = pos
+                        clear_square(pos)
+                        chessboard.board[captured_x][captured_y] = 0
                     cboard.blit(spritesheet.sp_sheet, (x * square_side_len, 800 - (y + 1) * square_side_len),
                                 sp_sheet_area)
                     pygame.display.update()
 
-# En Passant
-# If king in check, make sure that the next move gets out of it.
-#
+# Castling
+# Checkmate check - requires all possible moves. If in check, there can only be a few
